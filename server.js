@@ -1,30 +1,122 @@
-const express=require('express');
+const express = require('express');
 const app = express();
-const port = 3000;
 
-const data=require("./movieData/data.json");
+const axios = require('axios');
 
-app.listen(port,() =>{
-   console.log("http://localhost:"+`${port}`);
+require('dotenv').config();
+
+const port = process.env.PORT;
+const key = process.env.API_KEY;
+
+const data = require("./movieData/data.json");
+
+// get for lab 11 
+app.get('/', homeHandler);
+app.get('/favorite', favoriteHandler);
+// get for lab 12 
+app.get('/trending', trendingHandler);
+app.get('/search', searchHandler);
+app.get('/popularId', popularIdHandler);
+app.get('/TV', TVHandler);
+
+
+
+// ------------lab 12 functions -------------------------------
+
+//additional rout for the id in the data ==1===
+function popularIdHandler(req, res) {
+
+    let url = `https://api.themoviedb.org/3/person/popular?api_key=${key}&language=en-US&page=1`
+    axios.get(url)
+        .then(result => {
+            let respose = result.data.results.map(x => {
+                return new MovieLab12(x.id);
+            })
+            res.json(respose)
+        })
+        .catch(error => {
+            console.log(error);
+        })
+
 }
-)
-app.get('/',homeHandler);
-function homeHandler(req,res){
-    let singleMovie=new Movie(data.title,data.poster_path,data.overview);
+//additional rout for TV data ==2===
+function TVHandler(req, res) {
+
+    let url = `https://api.themoviedb.org/3/tv/changes?api_key=${key}&language=en-US&page=1`
+    axios.get(url)
+        .then(result => {
+            let respose = result.data.results;
+            res.json(respose)
+        })
+        .catch(error => {
+            console.log(error);
+        })
+
+}
+// http://localhost:300/trending (give the data accourding to the constructor)
+function trendingHandler(req, res) {
+    let url = `https://api.themoviedb.org/3/trending/all/week?api_key=${key}&language=en-US`
+    axios.get(url)
+        .then(result => {
+            let respose = result.data.results.map(x => {
+                return new MovieLab12(x.id, x.title, x.release_date, x.poster_path, x.overview);
+            })
+            res.json(respose)
+        })
+        .catch(error => {
+            console.log(error);
+        })
+
+}
+// http://localhost:300/title (searching acourding to the title)
+function searchHandler(req, res) {
+    let title = req.query.title;
+    let url = `https://api.themoviedb.org/3/search/movie?query=${title}&api_key=${key}&language=en-US`
+    axios.get(url)
+        .then(result => {
+            let response = result.data.results;
+             res.json(response);
+    })
+        .catch(error => {
+            console.log(error)
+        })
+}
+// ================================================================
+
+
+//-------lab 11 functions ---------------------------------
+// http://localhost:300/
+function homeHandler(req, res) {
+    let singleMovie = new MovieLab11(data.title, data.poster_path, data.overview);
     res.send(singleMovie);
 }
-
-function Movie(title,poster_path,overview){
-    this.title=title;
-    this.poster_path=poster_path;
-    this.overview=overview;
+// http://localhost:300/favorite
+function favoriteHandler(req, res) {
+    res.send("Welcome to Favorite Page")
 }
-app.get('/favorite',favoriteHandler);
-function favoriteHandler(req,res){
-  res.send("Welcome to Favorite Page")
+// ================================================================
+
+
+//constructor for lab 12 
+function MovieLab12(id, title, release_date, poster_path, overview) {
+    this.id = id;
+    this.title = title;
+    this.release_date = release_date;
+    this.poster_path = poster_path;
+    this.overview = overview;
 }
+//========================================================================
+
+//constructor for lab 11
+function MovieLab11(title, poster_path, overview) {
+    this.title = title;
+    this.poster_path = poster_path;
+    this.overview = overview;
+}
+//===========================================================================
 
 
+//error handling (server)
 app.use((err, req, res, next) => {
     console.error(err.stack);
     res.status(500).json({
@@ -32,11 +124,15 @@ app.use((err, req, res, next) => {
         responseText: "Sorry, something went wrong"
     });
 });
-
-
+//error handling (404)
 app.use((req, res, next) => {
     res.status(404).json({
         status: 404,
         responseText: "Page not found"
     });
 });
+//listining
+app.listen(port, () => {
+    console.log("http://localhost:" + `${port}`);
+}
+)

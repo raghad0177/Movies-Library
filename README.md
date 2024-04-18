@@ -3,72 +3,46 @@
 **Author Name**: Raghad Abdullah
 
 ## WRRC
+### Lab 11
 ![wrrc](/movieData/page1.png)
+### Lab 12
+![wrrc](/movieData/page1.png)
+## Code Overview
 
-## Overview
-Server Setup:
+### Server Setup:
+- Express.js is used for server creation and initialization.
+- Port number is retrieved from the environment variable `PORT`.
 
-Express.js is imported and initialized as app.
-The server is set to listen on port 3000.
-Data Handling:
+### Data Handling:
+- Movie data is loaded from a JSON file located at "./movieData/data.json".
 
-Movie data is imported from a JSON file located at "./movieData/data.json".
-Route Handling:
+### Route Handling:
+- Routes are defined for various endpoints:
+  - `/`: Handled by `homeHandler`, provides information about a single movie.
+  - `/favorite`: Handled by `favoriteHandler`, sends a simple message.
+  - `/trending`: Handled by `trendingHandler`, retrieves trending movie data.
+  - `/search`: Handled by `searchHandler`, searches movies based on the provided title.
+  - `/popularId`: Handled by `popularIdHandler`, retrieves popular movie IDs.
+  - `/TV`: Handled by `TVHandler`, retrieves TV show changes data.
 
-Two routes are defined:
-/ This route is handled by the homeHandler function, which sends information about a single movie as a response.
-/favorite: This route is handled by the favoriteHandler function, which sends a simple message ("Welcome to Favorite Page") as a response.
-Custom Error Handling Middleware:
+### Custom Error Handling Middleware:
+- Two error handling middleware functions are defined:
+  - One for server errors (status 500).
+  - Another for "page not found" errors (status 404).
 
-Two error handling middleware functions are defined:
-The first one handles server errors (status 500). It logs the error stack and sends a JSON response with a status code of 500 and a message indicating that something went wrong.
-The second one handles "page not found" errors (status 404). It sends a JSON response with a status code of 404 and a message indicating that the requested page was not found.
-## Getting Started
-Install Git:
-If you haven't already, download and install Git from the official website: Git - Downloads.
+## Modifications
 
-Initialize Git Repository:
-Open your project directory in your terminal or command prompt, then run the following command to initialize a Git repository:
+1. **Environment Variables:**
+   - Ensure that `PORT` and `API_KEY` are properly set in your environment or in a `.env` file for security purposes.
 
-csharp
-Copy code
-git init
-Add Files to Staging Area:
-Use the following command to add files to the staging area. Replace <file> with the file name or use . to add all files:
+2. **Error Handling:**
+   - Improve error handling by providing more descriptive error messages or logging.
 
-csharp
-Copy code
-git add <file>
-Commit Changes:
-Once you've added files to the staging area, commit them using the following command:
+3. **Code Optimization:**
+   - Consider optimizing code by reducing redundancy and improving readability.
 
-sql
-Copy code
-git commit -m "Initial commit"
-Replace "Initial commit" with a meaningful message describing the changes in this commit.
+4. **Security:**
+   - Implement security best practices such as input validation and sanitization, especially for routes like `/search` where user input is directly used in the API request.
 
-Connect to Remote Repository (Optional):
-If you want to store your code on a remote repository (like GitHub, GitLab, or Bitbucket), you need to connect your local repository to it. Follow the instructions provided by the platform to create a new repository and then link your local repository to it using the following commands:
-
-css
-Copy code
-git remote add origin <remote repository URL>
-git branch -M main
-git push -u origin main
-Replace <remote repository URL> with the URL of your remote repository.
-
-Start Coding:
-With Git set up, you can now start coding your project. After making changes to your files, you can add and commit them to track your progress.
-
-Push Changes:
-Whenever you're ready to save your changes to the remote repository, use the following command:
-
-css
-Copy code
-git push origin main
-This command pushes your committed changes from your local main branch to the main branch on the remote repository.
-
-## Project Features
-Displaying information about a single movie.
-Handling requests to a "favorite" page.
-Implementing basic error handling for server errors and "page not found" errors.
+5. **Documentation:**
+   - Add comments/documentation to enhance code readability and maintainability.
