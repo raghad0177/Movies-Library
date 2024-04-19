@@ -6,7 +6,9 @@
 ### Lab 11
 ![wrrc](/movieData/page1.png)
 ### Lab 12
-![wrrc](/movieData/page1.png)
+![wrrc](/movieData/lab12.png)
+## Lab 13
+![wrrc](/movieData/lab13.png)
 ## Code Overview
 
 ### Server Setup:
@@ -24,6 +26,8 @@
   - `/search`: Handled by `searchHandler`, searches movies based on the provided title.
   - `/popularId`: Handled by `popularIdHandler`, retrieves popular movie IDs.
   - `/TV`: Handled by `TVHandler`, retrieves TV show changes data.
+  - `/addMovie`: Handled by `addMovieHandler`, adds a new movie to the database.
+  - `/getMovies`: Handled by `getMoviesHandler`, retrieves all movies from the database.
 
 ### Custom Error Handling Middleware:
 - Two error handling middleware functions are defined:
@@ -33,7 +37,7 @@
 ## Modifications
 
 1. **Environment Variables:**
-   - Ensure that `PORT` and `API_KEY` are properly set in your environment or in a `.env` file for security purposes.
+   - Ensure that `PORT`, `USER`, `PASS`, and `API_KEY` are properly set in your environment or in a `.env` file for security purposes.
 
 2. **Error Handling:**
    - Improve error handling by providing more descriptive error messages or logging.
@@ -46,3 +50,8 @@
 
 5. **Documentation:**
    - Add comments/documentation to enhance code readability and maintainability.
+
+6. **Database Integration:**
+   - Connect the application to a PostgreSQL database using the `pg` library.
+   - Implement functions to interact with the database, such as adding and retrieving movies.
+
