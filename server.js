@@ -9,6 +9,19 @@ const port = process.env.PORT;
 const key = process.env.API_KEY;
 
 const data = require("./movieData/data.json");
+//setup the data base 
+const user = process.env.USER;
+const password=process.env.PASS;
+const {Client}=require('pg');
+const url =`postgres://${user}:${password}@localhost:5432/movies`;
+const client=new Client(url);
+
+
+//parser configurations 
+const bodyParser=require('body-parser');
+app.use(bodyParser.urlencoded({extended :false}));
+app.use(bodyParser.json());
+
 
 // get for lab 11 
 app.get('/', homeHandler);
@@ -18,7 +31,32 @@ app.get('/trending', trendingHandler);
 app.get('/search', searchHandler);
 app.get('/popularId', popularIdHandler);
 app.get('/TV', TVHandler);
+// get and post for lab 13
+app.post('/addMovie',addMovieHandler);
+app.get('/getMovies',getMoviesHandler);
 
+
+
+// --------------------lab 13 functions------------------------
+//get all movies from DB
+function getMoviesHandler(req,res){
+const sql=`SELECT * FROM movie`;
+client.query(sql).then((result)=>{
+    const data=result.rows;
+    res.json(data);
+    console.log(data);
+}).catch();
+}
+// add movie to DB
+function  addMovieHandler(req,res){
+const {ID,Name,commints}=req.body;
+const sql =`INSERT INTO movie (ID,Name,commints) VALUES ($1,$2,$3) RETURNING * ;`
+const values =[ID,Name,commints];
+client.query(sql,values).then((result)=>{
+    console.log(result.rows);
+    res.status(201).json(result.rows)    
+}).catch();
+}
 
 
 // ------------lab 12 functions -------------------------------
@@ -131,8 +169,10 @@ app.use((req, res, next) => {
         responseText: "Page not found"
     });
 });
-//listining
+//connect to db then make listining 
+client.connect().then(()=>{
 app.listen(port, () => {
     console.log("http://localhost:" + `${port}`);
+})
 }
-)
+).catch(); 
