@@ -9,6 +9,7 @@ const port = process.env.PORT;
 const key = process.env.API_KEY;
 
 const data = require("./movieData/data.json");
+
 //setup the data base 
 const user = process.env.USER;
 const password=process.env.PASS;
@@ -34,6 +35,43 @@ app.get('/TV', TVHandler);
 // get and post for lab 13
 app.post('/addMovie',addMovieHandler);
 app.get('/getMovies',getMoviesHandler);
+// update ,delete and get using params for lab 14
+app.put('/edit/:Id', fullEditHandler);
+app.delete('/delete/:Id',deleteHandler);
+app.get('/getMovie/:Id',getSpecificMHandler);
+
+// -------------------lab 14 functions-------------------------
+//get using params
+function getSpecificMHandler(req,res){
+    let id = req.params.Id;
+    let value = [id] ;
+let sql =`SELECT * FROM movie WHERE ID = $1 ;`
+client.query(sql,value).then(result =>{
+    const data=result.rows;
+    res.json(data);
+    console.log(data);
+}).catch()
+}
+// update using params 
+function fullEditHandler(req, res) {
+    let Id = req.params.Id;
+    let { Name, commints } = req.body;
+    let sql = `UPDATE movie SET Name = $1 , commints = $2 WHERE ID = $3 ;`;
+    let values = [Name, commints, Id];
+    client.query(sql, values).then(
+          res.send("Editing Done")
+    ).catch()
+}
+
+// delete using params
+function deleteHandler(req,res){
+    let id = req.params.Id;
+    sql = `DELETE FROM movie WHERE ID = $1`
+    let value = [id]; 
+    client.query(sql,value).then(
+        res.send("Deleted")
+    ).catch()
+}
 
 
 
@@ -47,11 +85,12 @@ client.query(sql).then((result)=>{
     console.log(data);
 }).catch();
 }
+
 // add movie to DB
 function  addMovieHandler(req,res){
-const {ID,Name,commints}=req.body;
-const sql =`INSERT INTO movie (ID,Name,commints) VALUES ($1,$2,$3) RETURNING * ;`
-const values =[ID,Name,commints];
+const {Name,commints}=req.body;
+const sql =`INSERT INTO movie (Name,commints) VALUES ($1,$2) RETURNING * ;`
+const values =[Name,commints];
 client.query(sql,values).then((result)=>{
     console.log(result.rows);
     res.status(201).json(result.rows)    
