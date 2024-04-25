@@ -14,7 +14,7 @@ const data = require("./movieData/data.json");
 const user = process.env.USER;
 const password=process.env.PASS;
 const {Client}=require('pg');
-const url =`postgres://${user}:${password}@localhost:5432/movies`;
+const url =`postgres://vgktjtsz:G0uZf96mXeUCupJWQhWvsX3xxLdi9bAd@mouse.db.elephantsql.com/vgktjtsz`;
 const client=new Client(url);
 
 
