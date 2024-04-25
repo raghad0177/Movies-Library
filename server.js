@@ -14,8 +14,12 @@ const data = require("./movieData/data.json");
 const user = process.env.USER;
 const password=process.env.PASS;
 const {Client}=require('pg');
-const url =`postgres://vgktjtsz:G0uZf96mXeUCupJWQhWvsX3xxLdi9bAd@mouse.db.elephantsql.com/vgktjtsz`;
+const url = process.env.URL;
 const client=new Client(url);
+//url for local DB
+// const url2=`postgres://${user}:${password}@localhost:5432/movies`
+//if i want to test localDB
+// const client1=new Client(url2);
 
 
 //parser configurations 
