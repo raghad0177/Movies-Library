@@ -12,10 +12,10 @@ const data = require("./movieData/data.json");
 
 //setup the data base 
 const user = process.env.USER;
-const password=process.env.PASS;
-const {Client}=require('pg');
+const password = process.env.PASS;
+const { Client } = require('pg');
 const url = process.env.URL;
-const client=new Client(url);
+const client = new Client(url);
 //url for local DB
 // const url2=`postgres://${user}:${password}@localhost:5432/movies`
 //if i want to test localDB
@@ -23,8 +23,8 @@ const client=new Client(url);
 
 
 //parser configurations 
-const bodyParser=require('body-parser');
-app.use(bodyParser.urlencoded({extended :false}));
+const bodyParser = require('body-parser');
+app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
 
@@ -37,42 +37,46 @@ app.get('/search', searchHandler);
 app.get('/popularId', popularIdHandler);
 app.get('/TV', TVHandler);
 // get and post for lab 13
-app.post('/addMovie',addMovieHandler);
-app.get('/getMovies',getMoviesHandler);
+app.post('/addMovie', addMovieHandler);
+app.get('/getMovies', getMoviesHandler);
 // update ,delete and get using params for lab 14
 app.put('/edit/:Id', fullEditHandler);
-app.delete('/delete/:Id',deleteHandler);
-app.get('/getMovie/:Id',getSpecificMHandler);
+app.delete('/delete/:Id', deleteHandler);
+app.get('/getMovie/:Id', getSpecificMHandler);
+
+
+
 
 // -------------------lab 14 functions-------------------------
 //get using params
-function getSpecificMHandler(req,res){
+function getSpecificMHandler(req, res) {
     let id = req.params.Id;
-    let value = [id] ;
-let sql =`SELECT * FROM movie WHERE ID = $1 ;`
-client.query(sql,value).then(result =>{
-    const data=result.rows;
-    res.json(data);
-    console.log(data);
-}).catch()
+    let value = [id];
+    let sql = `SELECT * FROM movie WHERE ID = $1 ;`
+    client.query(sql, value).then(result => {
+        const data = result.rows;
+        res.json(data);
+        console.log(data);
+    }).catch()
 }
 // update using params 
 function fullEditHandler(req, res) {
     let Id = req.params.Id;
-    let { Name, commints } = req.body;
-    let sql = `UPDATE movie SET Name = $1 , commints = $2 WHERE ID = $3 ;`;
-    let values = [Name, commints, Id];
+    let { title, commints, original_title, release_date, poster_path, overview } = req.body;
+    let sql = `UPDATE movie SET title = $1 , commints = $2 ,original_title=$3,release_date=$4 ,
+               poster_path=$5 ,overview=$6 WHERE ID = $7 ;`;
+    let values = [title, commints, original_title, release_date, poster_path, overview, Id];
     client.query(sql, values).then(
-          res.send("Editing Done")
+        res.send("Editing Done")
     ).catch()
 }
 
 // delete using params
-function deleteHandler(req,res){
+function deleteHandler(req, res) {
     let id = req.params.Id;
     sql = `DELETE FROM movie WHERE ID = $1`
-    let value = [id]; 
-    client.query(sql,value).then(
+    let value = [id];
+    client.query(sql, value).then(
         res.send("Deleted")
     ).catch()
 }
@@ -81,24 +85,25 @@ function deleteHandler(req,res){
 
 // --------------------lab 13 functions------------------------
 //get all movies from DB
-function getMoviesHandler(req,res){
-const sql=`SELECT * FROM movie`;
-client.query(sql).then((result)=>{
-    const data=result.rows;
-    res.json(data);
-    console.log(data);
-}).catch();
+function getMoviesHandler(req, res) {
+    const sql = `SELECT * FROM movie`;
+    client.query(sql).then((result) => {
+        const data = result.rows;
+        res.json(data);
+        console.log(data);
+    }).catch();
 }
 
 // add movie to DB
-function  addMovieHandler(req,res){
-const {Name,commints}=req.body;
-const sql =`INSERT INTO movie (Name,commints) VALUES ($1,$2) RETURNING * ;`
-const values =[Name,commints];
-client.query(sql,values).then((result)=>{
-    console.log(result.rows);
-    res.status(201).json(result.rows)    
-}).catch();
+function addMovieHandler(req, res) {
+    const { title, commints, original_title, release_date, poster_path, overview} = req.body;
+    const sql = `INSERT INTO movie (title, commints, original_title, release_date, poster_path, overview) 
+                 VALUES ($1,$2,$3,$4,$5,$6) RETURNING * ;`
+    const values = [title, commints, original_title, release_date, poster_path, overview];
+    client.query(sql, values).then((result) => {
+        console.log(result.rows);
+        res.status(201).json(result.rows)
+    }).catch();
 }
 
 
@@ -156,8 +161,8 @@ function searchHandler(req, res) {
     axios.get(url)
         .then(result => {
             let response = result.data.results;
-             res.json(response);
-    })
+            res.json(response);
+        })
         .catch(error => {
             console.log(error)
         })
@@ -213,9 +218,9 @@ app.use((req, res, next) => {
     });
 });
 //connect to db then make listining 
-client.connect().then(()=>{
-app.listen(port, () => {
-    console.log("http://localhost:" + `${port}`);
-})
+client.connect().then(() => {
+    app.listen(port, () => {
+        console.log("http://localhost:" + `${port}`);
+    })
 }
 ).catch(); 
