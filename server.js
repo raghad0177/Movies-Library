@@ -1,32 +1,34 @@
 const express = require('express');
 const app = express();
-
+const cors =require('cors')
 const axios = require('axios');
-
+const bodyParser = require('body-parser');
+const { Client } = require('pg');
 require('dotenv').config();
 
 const port = process.env.PORT;
 const key = process.env.API_KEY;
-
 const data = require("./movieData/data.json");
 
-//setup the data base 
-const user = process.env.USER;
-const password = process.env.PASS;
-const { Client } = require('pg');
+// Setup database connection
 const url = process.env.URL;
 const client = new Client(url);
-//url for local DB
-// const url2=`postgres://${user}:${password}@localhost:5432/movies`
-//if i want to test localDB
-// const client1=new Client(url2);
 
+// Middleware configurations
+app.use(cors())
 
-//parser configurations 
-const bodyParser = require('body-parser');
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
+
+// CORS middleware
+app.use((req, res, next) => {
+    res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3001');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+    res.setHeader('Access-Control-Allow-Credentials', 'true');
+    next();
+});
 
 // get for lab 11 
 app.get('/', homeHandler);
@@ -212,11 +214,13 @@ app.use((err, req, res, next) => {
 });
 //error handling (404)
 app.use((req, res, next) => {
+    
     res.status(404).json({
         status: 404,
         responseText: "Page not found"
     });
 });
+
 //connect to db then make listining 
 client.connect().then(() => {
     app.listen(port, () => {
